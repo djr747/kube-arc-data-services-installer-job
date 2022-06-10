@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kube-arc-data-services-installer
+  namespace: arc-data-services-installer
+spec:
+  template:
+    metadata:
+      labels:
+        name: kube-arc-data-services-installer
+        app: kube-arc-data-services-installer
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: kube-arc-data-services-installer
+        image: djrsystems/kube-arc-data-services-installer-job:latest
+        env:
+        - name: KUBE_SECRET_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: KUBE_CLUSTER
+          value: {{kubernetesClusterName}}
+        - name: KUBE_ARC_DATA_LOGUI_K8S_SECRET
+          value: "arc-data-logui-secret"
+        - name: KUBE_ARC_DATA_METRICUI_K8S_SECRET
+          value: "arc-data-metricui-secret"
+        - name: KUBE_AZ_APP_K8S_SECRET
+          value: "az-app-secret"
+        - name: AZ_LOCATION
+          value: "EastUS2"
+        - name: AZ_SUBSCRIPTION
+          value: {{subscriptionName}} 
+        - name: AZ_ARC_CLUSTER
+          value: {{acrClusterName}}
+        - name: AZ_ARC_CLUSTER_RESOURCE_GROUP
+          value: {{acrClusterRG}}
+        - name: AZ_ARC_DATA_SERVICES_CUSTOM_LOCATION
+          value: {{acrDataServicesCustomLocation}}
+        - name: AZ_ARC_DATA_CONTROLLER
+          value: {{acrDataServicesControllerName}}
+        - name: AZ_CUSTOM_LOCATIONS_RP_OBJECT_ID
+          value: {{customLocationResourceProviderObjectID}}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /home/container-user/config
+      serviceAccountName: kube-arc-data-services-installer-job
+      automountServiceAccountToken: true
+      volumes:
+      - name: config-volume
+        configMap:
+          name: data-controller-configmap
