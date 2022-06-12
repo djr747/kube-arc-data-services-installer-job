@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 # Version 0.1 - 2022-06-07 - Basic deployment flow
+# Version 0.2 - 2022-06-12 - Remove warnings
 
 # Perform validations
 #
@@ -180,6 +181,13 @@ else
     export AZ_APP_ID=$(kubectl get secrets $KUBE_AZ_APP_K8S_SECRET -n $KUBE_SECRET_NAMESPACE --template={{.data.appId}} | base64 -d)
     export AZ_APP_CLIENT_SECRET=$(kubectl get secrets $KUBE_AZ_APP_K8S_SECRET -n $KUBE_SECRET_NAMESPACE --template={{.data.secret}} | base64 -d)
     export AZ_TENANT_ID=$(kubectl get secrets $KUBE_AZ_APP_K8S_SECRET -n $KUBE_SECRET_NAMESPACE --template={{.data.tenantId}} | base64 -d)
+fi
+
+# Turn off warnings
+#
+if [ -z "$LOCAL_RUN" ]; then 
+    echo "Turning off az cli warnings"
+    az config set core.only_show_errors=true --only-show-errors
 fi
 
 # Login to Azure
