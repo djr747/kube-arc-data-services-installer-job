@@ -25,4 +25,6 @@ jobs:
 workflows:
   docker-build:
     jobs:
-      - build
+      - build:
+          context:
+          - dockerhub
