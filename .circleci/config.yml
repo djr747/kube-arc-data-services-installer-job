@@ -14,8 +14,12 @@ jobs:
       - setup_remote_docker:
           version: 20.10.14
       - run:
+          name: Get Prerequisits
+          command: apk update && apk add curl curl-dev
+      - run:
           name: Build Docker image
           command: |
+            apk update && apk add curl curl-dev
             docker build -t djrsystems/kube-arc-data-services-installer-job:latest .
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker push djrsystems/kube-arc-data-services-installer-job:latest
