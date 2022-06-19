@@ -14,17 +14,18 @@ jobs:
       - setup_remote_docker:
           version: 20.10.14
       - run:
-          name: Get Prerequisits
-          command: apk update && apk add curl curl-dev
+          name: Get Prerequisites
+          command: apk update && apk add curl curl-dev zip unzip
       - run:
           name: Build Docker image
           command: |
-            apk update && apk add curl curl-dev
             docker build -t djrsystems/kube-arc-data-services-installer-job:latest .
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push djrsystems/kube-arc-data-services-installer-job:latest
       - sonarcloud/scan
-
+      - run:
+          name: Push Docker image
+          command: |
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push djrsystems/kube-arc-data-services-installer-job:latest    
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
