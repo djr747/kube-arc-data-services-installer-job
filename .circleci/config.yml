@@ -19,13 +19,8 @@ jobs:
             docker build -t djrsystems/kube-arc-data-services-installer-job:latest .
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker push djrsystems/kube-arc-data-services-installer-job:latest
-      - anchore/analyze_local_image:
-          dockerfile_path: ./Dockerfile
-          image_name: 'djrsystems/kube-arc-data-services-installer-job/test:latest'
-          #policy_bundle_file_path: .circleci/.anchore/policy_bundle.json
-          #policy_failure: true
-          timeout: '500'
-      - anchore/parse_reports
+      - sonarcloud/scan
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -34,5 +29,6 @@ workflows:
       - build:
           context:
           - dockerhub
+          - sonarcloud
 orbs:
-  anchore: anchore/anchore-engine@1
+  sonarcloud: sonarsource/sonarcloud@1.0.3
